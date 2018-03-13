@@ -1,0 +1,6 @@
+((prog-mode . ((pdj:project-directory . "/home/juca/mysrc/asyncamqp/")
+	       (pdj:custom-commands . "t")))
+ (python-mode . ((pdj:venv-name . "asyncamqp")
+		 (pdj:test-command . "python setup.py test")
+		 (pdj:coverage-command . "sh ./build-scripts/check_coverage.sh")
+		 (pdj:py-autopep8 . "t"))))

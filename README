@@ -1,0 +1,65 @@
+Asyncamqp is a little extension to aioamqp based on the ideas from this
+pull request (https://github.com/Polyconseil/aioamqp/pull/118). The changes
+here get rid of the callbacks stuff.
+
+Install
+=======
+
+Install it using pip
+
+.. code-block:: sh
+
+    $ pip install asyncamqp
+
+
+Usage
+=====
+
+To publish stuff, just do the same as you would do with aioamqp:
+
+.. code-block:: python
+
+    await channel.basic_publish(payload='hi there!', exchange_name='',
+    	                        routing_key='my-rt')
+
+
+To consume stuff, you don't need to use callbacks anymore.
+
+.. code-block:: python
+
+    async with channel.basic_consume(queue_name='my-queue', exchange_name='',
+                                     routing_key='my-queue') as consumer:
+        async for msg in consumer:
+            print(msg.body)
+
+
+Consuming messages this way we always wait for a new message to arrive in the
+queue. We can use a timeout in milliseconds for it, too:
+
+.. code-block:: python
+
+    # now we pass the timeout argument
+    async with channel.basic_consume(queue_name='my-queue', exchange_name='',
+                                     routing_key='my-queue',
+	    			     timeout=100) as consumer:
+        async for msg in consumer:
+            print(msg.body)
+
+
+Or we could simply consume the messages already in the queue and stop
+consuming stuff when we have no more messages:
+
+.. code-block:: python
+
+    # now we pass the wait_message argument.
+    async with channel.basic_consume(queue_name='my-queue', exchange_name='',
+                                     routing_key='my-queue',
+	                             wait_message=False) as consumer:
+        async for msg in consumer:
+            print(msg.body)
+
+
+As it is a simple extension to aioamqp, please refer to the
+`aioamqp's docs <http://aioamqp.readthedocs.io/en/latest/index.html>`_
+for full information. Just remember that when consuming it you don't use
+callbacks but the context manager/async for stuff.
