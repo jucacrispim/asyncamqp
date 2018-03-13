@@ -44,6 +44,8 @@ class Consumer:
     """Class responsible for consuming messages from a queue in the
     broker."""
 
+    MESSAGE_CLASS = Message
+
     def __init__(self, channel, queue, consumer_tag, nowait=False,
                  timeout=0):
         """Constructor for Consumer.
@@ -117,5 +119,5 @@ class Consumer:
 
         msg = await self.queue.get()
 
-        self.message = Message(*msg)
+        self.message = self.MESSAGE_CLASS(*msg)
         return self.message
