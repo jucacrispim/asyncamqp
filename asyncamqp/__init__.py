@@ -6,4 +6,4 @@ from asyncamqp.channel import Channel
 
 AmqpProtocol.CHANNEL_FACTORY = Channel
 
-VERSION = '0.1'
+VERSION = '0.1.1'
