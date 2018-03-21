@@ -32,6 +32,8 @@ logger = logging.getLogger(__name__)
 
 class Channel(BaseChannel):
 
+    CONSUMER_CLASS = Consumer
+
     def __init__(self, *args, max_queue_size=0, **kwargs):
         """Constructor for Channel.
 
