@@ -92,9 +92,10 @@ class Channel(BaseChannel):
         self.consumer_queues[consumer_tag] = asyncio.Queue(self.max_queue_size)
         self.last_consumer_tag = consumer_tag
 
-        consumer = Consumer(self, self.consumer_queues[consumer_tag],
-                            consumer_tag, nowait=not wait_message,
-                            timeout=timeout)
+        consumer = self.CONSUMER_CLASS(
+            self, self.consumer_queues[consumer_tag],
+            consumer_tag, nowait=not wait_message,
+            timeout=timeout)
 
         await self._write_frame_awaiting_response(
             'basic_consume', frame, request, no_wait)
