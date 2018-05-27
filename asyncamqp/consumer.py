@@ -114,8 +114,8 @@ class Consumer:
                 t += 1
             else:
                 await self.cancel()
-                raise ConsumerTimeout('Could not get a message in {} ms'.format(
-                    self.timeout))
+                raise ConsumerTimeout(
+                    'Could not get a message in {} ms'.format(self.timeout))
 
         msg = await self.queue.get()
 

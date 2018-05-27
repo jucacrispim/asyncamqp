@@ -103,7 +103,7 @@ class TestChannel(TestCase):
             async for msg in consumer:
                 self.assertEqual(msg.body, b'my-test')
                 total += 1
-                break
+                break  # noqa F999
 
         self.assertEqual(total, 1)
         await channel.basic_cancel(consumer.tag)
@@ -132,7 +132,7 @@ class TestChannel(TestCase):
                 await asyncio.sleep(0.1)
                 self.assertTrue(channel.basic_reject.called)
 
-                break
+                break  # noqa F999
 
     @async_test
     async def test_fetch_message_timeout(self):
@@ -165,6 +165,6 @@ class TestChannel(TestCase):
             async for msg in consumer:
                 del msg
                 total += 1
-                break
+                break  # noqa F999
 
             self.assertEqual(total, 1)

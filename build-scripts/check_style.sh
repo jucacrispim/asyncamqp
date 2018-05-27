@@ -1,6 +1,6 @@
 #!/bin/bash
 
-flake=`flake8 asyncamqp tests`;
+flake=`flake8 asyncamqp tests.py`;
 
 
 if [ "$flake" != "" ]
