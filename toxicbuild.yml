@@ -7,6 +7,11 @@ FLAKE8: &FLAKE8
   name: 'Flake8'
   command: sh ./build-scripts/check_style.sh
 
+APT_INSTALL:  &APT_INSTALL
+  name: apt-install
+  packages:
+    - rabbitmq-server
+
 
 builders:
   - name: python3.5
@@ -16,6 +21,8 @@ builders:
     plugins:
       - name: python-venv
         pyversion: python3.5
+
+      - <<: *APT_INSTALL
 
     platform: python3.5
 
@@ -32,6 +39,8 @@ builders:
       - name: python-venv
         pyversion: python3.6
 
+      - <<: *APT_INSTALL
+
     platform: python3.6
 
     steps:
@@ -46,6 +55,8 @@ builders:
     plugins:
       - name: python-venv
         pyversion: python3.7
+
+      - <<: *APT_INSTALL
 
     platform: python3.7
 
