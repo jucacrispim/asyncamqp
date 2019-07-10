@@ -40,7 +40,7 @@ setup(name='asyncamqp',
       packages=find_packages(exclude=['tests', 'tests.*']),
       license='GPL',
       include_package_data=True,
-      install_requires=['aioamqp'],
+      install_requires=['aioamqp==0.13.0'],
       # classifiers=[
       #     'Development Status :: 3 - Alpha',
       #     'Environment :: No Input/Output (Daemon)',

@@ -93,7 +93,8 @@ class TestChannel(TestCase):
     async def test_basic_consume_messages(self):
         channel = await self.protocol.channel()
         await channel.queue_declare(queue_name='test-queue')
-        await channel.basic_publish(payload='my-test', exchange_name='',
+        await channel.basic_publish(payload='my-test'.encode(),
+                                    exchange_name='',
                                     routing_key='test-queue')
 
         total = 0
@@ -115,7 +116,8 @@ class TestChannel(TestCase):
         channel = await self.protocol.channel(max_queue_size=1)
         channel.basic_reject = AsyncMagicMock(spec=channel.basic_reject)
         await channel.queue_declare(queue_name='test-queue')
-        await channel.basic_publish(payload='my-test', exchange_name='',
+        await channel.basic_publish(payload='my-test'.encode(),
+                                    exchange_name='',
                                     routing_key='test-queue')
 
         async with await channel.basic_consume(
@@ -123,10 +125,10 @@ class TestChannel(TestCase):
             async for msg in cons:
                 self.assertEqual(msg.body, b'my-test')
                 await channel.basic_publish(
-                    payload='my-test', exchange_name='',
+                    payload='my-test'.encode(), exchange_name='',
                     routing_key='test-queue')
                 await channel.basic_publish(
-                    payload='my-test', exchange_name='',
+                    payload='my-test'.encode(), exchange_name='',
                     routing_key='test-queue')
 
                 await asyncio.sleep(0.1)
@@ -150,7 +152,8 @@ class TestChannel(TestCase):
         channel = await self.protocol.channel()
 
         await channel.queue_declare(queue_name='test-queue')
-        await channel.basic_publish(payload='my-test', exchange_name='',
+        await channel.basic_publish(payload='my-test'.encode(),
+                                    exchange_name='',
                                     routing_key='test-queue')
         mchannel, body, envelope, properties = Mock(), 'body', Mock(), {}
 

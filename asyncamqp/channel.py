@@ -22,9 +22,10 @@ import io
 import logging
 import uuid
 from aioamqp.channel import Channel as BaseChannel
-from aioamqp.channel import amqp_frame, amqp_constants
+from aioamqp.channel import amqp_frame
 from aioamqp.envelope import Envelope
 from asyncamqp.consumer import Consumer
+import pamqp.specification
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +51,6 @@ class Channel(BaseChannel):
                             no_wait=False, arguments=None, wait_message=True,
                             timeout=0):
         """Starts the consumption of message into a queue.
-        the callback will be called each time we're receiving a message.
 
             Args:
                 queue_name:     str, the queue to receive message from
@@ -77,17 +77,15 @@ class Channel(BaseChannel):
         if arguments is None:
             arguments = {}
 
-        frame = amqp_frame.AmqpRequest(
-            self.protocol._stream_writer, amqp_constants.TYPE_METHOD,
-            self.channel_id)
-        frame.declare_method(
-            amqp_constants.CLASS_BASIC, amqp_constants.BASIC_CONSUME)
-        request = amqp_frame.AmqpEncoder()
-        request.write_short(0)
-        request.write_shortstr(queue_name)
-        request.write_shortstr(consumer_tag)
-        request.write_bits(no_local, no_ack, exclusive, no_wait)
-        request.write_table(arguments)
+        request = pamqp.specification.Basic.Consume(
+            queue=queue_name,
+            consumer_tag=consumer_tag,
+            no_local=no_local,
+            no_ack=no_ack,
+            exclusive=exclusive,
+            nowait=no_wait,
+            arguments=arguments
+        )
 
         self.consumer_queues[consumer_tag] = asyncio.Queue(self.max_queue_size)
         self.last_consumer_tag = consumer_tag
@@ -98,7 +96,7 @@ class Channel(BaseChannel):
             timeout=timeout)
 
         await self._write_frame_awaiting_response(
-            'basic_consume', frame, request, no_wait)
+            'basic_consume', self.channel_id, request, no_wait)
 
         if not no_wait:
             self._ctag_events[consumer_tag].set()
@@ -106,18 +104,17 @@ class Channel(BaseChannel):
         return consumer
 
     async def basic_deliver(self, frame):
-        response = amqp_frame.AmqpDecoder(frame.payload)
-        consumer_tag = response.read_shortstr()
-        delivery_tag = response.read_long_long()
-        is_redeliver = response.read_bit()
-        exchange_name = response.read_shortstr()
-        routing_key = response.read_shortstr()
-        content_header_frame = await self.protocol.get_frame()
+        consumer_tag = frame.consumer_tag
+        delivery_tag = frame.delivery_tag
+        is_redeliver = frame.redelivered
+        exchange_name = frame.exchange
+        routing_key = frame.routing_key
+        _channel, content_header_frame = await self.protocol.get_frame()
 
         buffer = io.BytesIO()
         while(buffer.tell() < content_header_frame.body_size):
-            content_body_frame = await self.protocol.get_frame()
-            buffer.write(content_body_frame.payload)
+            _channel, content_body_frame = await self.protocol.get_frame()
+            buffer.write(content_body_frame.value)
 
         body = buffer.getvalue()
         envelope = Envelope(consumer_tag, delivery_tag,
