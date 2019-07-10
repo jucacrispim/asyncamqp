@@ -22,7 +22,6 @@ import io
 import logging
 import uuid
 from aioamqp.channel import Channel as BaseChannel
-from aioamqp.channel import amqp_frame
 from aioamqp.envelope import Envelope
 from asyncamqp.consumer import Consumer
 import pamqp.specification
