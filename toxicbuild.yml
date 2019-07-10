@@ -1,0 +1,54 @@
+TESTS: &TESTS
+  name: 'Tests'
+  command: sh ./build-scripts/check_coverage.sh
+
+
+FLAKE8: &FLAKE8
+  name: 'Flake8'
+  command: sh ./build-scripts/check_style.sh
+
+
+builders:
+  - name: python3.5
+    branches:
+      - master
+
+    plugins:
+      - name: python-venv
+        pyversion: python3.5
+
+    platform: python3.5
+
+    steps:
+      - <<: *TESTS
+      - <<: *FLAKE8
+
+
+  - name: python3.6
+    branches:
+      - master
+
+    plugins:
+      - name: python-venv
+        pyversion: python3.6
+
+    platform: python3.6
+
+    steps:
+      - <<: *TESTS
+      - <<: *FLAKE8
+
+
+  - name: python3.7
+    branches:
+      - master
+
+    plugins:
+      - name: python-venv
+        pyversion: python3.7
+
+    platform: python3.7
+
+    steps:
+      - <<: *TESTS
+      - <<: *FLAKE8
