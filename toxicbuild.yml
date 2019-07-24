@@ -13,53 +13,18 @@ APT_INSTALL:  &APT_INSTALL
     - rabbitmq-server
 
 
-builders:
-  - name: python3.5
-    branches:
-      - master
+language: python
+branches:
+  - master
 
-    plugins:
-      - name: python-venv
-        pyversion: python3.5
+plugins:
+  - name: python-venv
+    pyversion: python3.5
 
-      - <<: *APT_INSTALL
+  - name: apt-install
+    packages:
+      - rabbitmq-serve
 
-    platform: python3.5
-
-    steps:
-      - <<: *TESTS
-      - <<: *FLAKE8
-
-
-  - name: python3.6
-    branches:
-      - master
-
-    plugins:
-      - name: python-venv
-        pyversion: python3.6
-
-      - <<: *APT_INSTALL
-
-    platform: python3.6
-
-    steps:
-      - <<: *TESTS
-      - <<: *FLAKE8
-
-
-  - name: python3.7
-    branches:
-      - master
-
-    plugins:
-      - name: python-venv
-        pyversion: python3.7
-
-      - <<: *APT_INSTALL
-
-    platform: python3.7
-
-    steps:
-      - <<: *TESTS
-      - <<: *FLAKE8
+steps:
+  - <<: *TESTS
+  - <<: *FLAKE8
