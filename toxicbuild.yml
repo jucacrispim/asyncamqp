@@ -14,16 +14,11 @@ versions:
   - '3.6'
   - '3.7'
 
+system_packages:
+  - rabbitmq-server
+
 branches:
   - master
-
-plugins:
-  - name: python-venv
-    pyversion: python3.5
-
-  - name: apt-install
-    packages:
-      - rabbitmq-server
 
 steps:
   - <<: *TESTS
