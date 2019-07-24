@@ -7,11 +7,6 @@ FLAKE8: &FLAKE8
   name: 'Flake8'
   command: sh ./build-scripts/check_style.sh
 
-APT_INSTALL:  &APT_INSTALL
-  name: apt-install
-  packages:
-    - rabbitmq-server
-
 
 language: python
 versions:
@@ -28,7 +23,7 @@ plugins:
 
   - name: apt-install
     packages:
-      - rabbitmq-serve
+      - rabbitmq-server
 
 steps:
   - <<: *TESTS
