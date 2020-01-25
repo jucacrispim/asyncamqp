@@ -95,7 +95,7 @@ class Channel(BaseChannel):
             timeout=timeout)
 
         await self._write_frame_awaiting_response(
-            'basic_consume', self.channel_id, request, no_wait)
+            'basic_consume' + consumer_tag, self.channel_id, request, no_wait)
 
         if not no_wait:
             self._ctag_events[consumer_tag].set()
