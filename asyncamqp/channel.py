@@ -24,7 +24,7 @@ import uuid
 from aioamqp.channel import Channel as BaseChannel
 from aioamqp.envelope import Envelope
 from asyncamqp.consumer import Consumer
-import pamqp.specification
+import pamqp.commands
 
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,7 @@ class Channel(BaseChannel):
         if arguments is None:
             arguments = {}
 
-        request = pamqp.specification.Basic.Consume(
+        request = pamqp.commands.Basic.Consume(
             queue=queue_name,
             consumer_tag=consumer_tag,
             no_local=no_local,

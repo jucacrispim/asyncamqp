@@ -19,7 +19,7 @@
 
 import asyncio
 from unittest import TestCase
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, AsyncMock, patch
 from asyncamqp import connect
 from asyncamqp.consumer import Consumer
 from asyncamqp.exceptions import ConsumerTimeout
@@ -29,24 +29,13 @@ def async_test(f):
 
     def wrapper(*args, **kwargs):
         loop = asyncio.get_event_loop()
-        coro = asyncio.coroutine(f)
+
+        async def coro(*args, **kwargs):
+            return await f(*args, **kwargs)
+
         loop.run_until_complete(coro(*args, **kwargs))
 
     return wrapper
-
-
-class AsyncMagicMock(MagicMock):
-
-    def __call__(self, *a, **kw):
-        s = super().__call__(*a, **kw)
-
-        async def ret():
-            return s
-
-        return ret()
-
-    def __bool__(self):
-        return True
 
 
 class ConsumerTest(TestCase):
@@ -63,7 +52,7 @@ class ConsumerTest(TestCase):
     @async_test
     async def test_consume_messages_no_wait(self):
         queue = asyncio.Queue()
-        channel = AsyncMagicMock()
+        channel = AsyncMock()
         body, envelope, properties = 'body', Mock(), {}
         await queue.put((channel, body, envelope, properties))
         await queue.put((channel, body, envelope, properties))
@@ -114,7 +103,7 @@ class TestChannel(TestCase):
     async def test_consumer_queue_full(self, *args, **kwargs):
 
         channel = await self.protocol.channel(max_queue_size=1)
-        channel.basic_reject = AsyncMagicMock(spec=channel.basic_reject)
+        channel.basic_reject = AsyncMock(spec=channel.basic_reject)
         await channel.queue_declare(queue_name='test-queue')
         await channel.basic_publish(payload='my-test'.encode(),
                                     exchange_name='',
@@ -161,9 +150,9 @@ class TestChannel(TestCase):
                 queue_name='test-queue', no_ack=True,
                 timeout=100) as consumer:
             consumer.queue.empty = Mock(side_effect=[True, True, True, False])
-            consumer.queue.get = AsyncMagicMock(side_effect=[(mchannel, body,
-                                                              envelope,
-                                                              properties)])
+            consumer.queue.get = AsyncMock(side_effect=[(mchannel, body,
+                                                         envelope,
+                                                         properties)])
             total = 0
             async for msg in consumer:
                 del msg
