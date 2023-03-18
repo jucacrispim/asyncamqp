@@ -22,6 +22,7 @@ def get_long_description_from_file():
         fcontent = f.read()
     return fcontent
 
+
 VERSION = get_version_from_file()
 
 DESCRIPTION = """
