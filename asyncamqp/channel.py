@@ -111,7 +111,7 @@ class Channel(BaseChannel):
         _channel, content_header_frame = await self.protocol.get_frame()
 
         buffer = io.BytesIO()
-        while(buffer.tell() < content_header_frame.body_size):
+        while buffer.tell() < content_header_frame.body_size:
             _channel, content_body_frame = await self.protocol.get_frame()
             buffer.write(content_body_frame.value)
 
